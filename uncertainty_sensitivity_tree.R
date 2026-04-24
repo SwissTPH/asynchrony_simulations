@@ -218,7 +218,7 @@ hist_rinv / (hist_W1 + hist_W2) / (hist_RC_1 + hist_RC_2) + plot_layout(guides =
 
 myvars <- c("rinv", "time_intervention", "R0_1", "R0_2", "W_1", "W_2", "p_1", "p_2")
 
-#soboljansen_AIG = soboljansen(model = AIG1_computation, X1[myvars], X2[myvars], nboot = 100)
+soboljansen_AIG = soboljansen(model = AIG1_computation, X1[myvars], X2[myvars], nboot = 100)
 
 df_sobol_first_order = soboljansen_AIG$S
 df_sobol_first_order$index = "first order"
@@ -244,7 +244,7 @@ pl_first_total <- sobol_AIG %>%
   theme_bw()+
   theme(legend.position = "bottom", legend.box="vertical", legend.text = element_text(size = 10), legend.title =  element_blank())+
   theme(strip.background =element_rect(fill="white", color="white"))+
-  theme(legend.position=c(0.83,1),#c(0.83,1),
+  theme(legend.position=c(0.83,1),
         legend.background=element_rect(colour = 1),
         legend.box = "horizontal")
 pl_first_total
