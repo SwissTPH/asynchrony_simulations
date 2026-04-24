@@ -16,7 +16,7 @@
 #=================================== MODEL ===================================
 rm(list=ls())
 setwd(dirname(rstudioapi::getSourceEditorContext()$path))
-source('model_implementation.r')
+source('ODE_model.r')
 
 #=================================== IMPORTS ===================================
 library(odin)
@@ -469,7 +469,7 @@ visualize_incidence <- function(incidence, start_year, length_intervention, year
   
   }
 
-plot_metric_by_parameter <- function(data, param, metric, bin_width, name_param) {
+plot_metric_by_parameter <- function(data, param, metric, bin_width, name_param, y_name=FALSE) {
   
   param <- enquo(param)
   metric <- enquo(metric)
@@ -496,10 +496,16 @@ plot_metric_by_parameter <- function(data, param, metric, bin_width, name_param)
     geom_ribbon(aes(ymin = I_q1, ymax = I_q3), fill = "steelblue", alpha = 0.4) +
     geom_line(aes(y = I_mean), color = "blue", size = 1) +
     labs(x = name_param) +
-    theme_minimal() + theme(axis.title.y = element_blank()) +
+    theme_minimal() + #theme(axis.title.y = element_blank()) +
     theme(axis.title.x = element_text(size = 10),
           axis.text.x = element_text(size = 7.5),
           axis.text.y = element_text(size = 7.5))
+  
+  if(y_name){
+    p=p+labs(y="AIG per year in Area 1")
+  } else {
+    p=p+theme(axis.title.y = element_blank())
+  }
   
   return(p)
 }

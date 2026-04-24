@@ -56,6 +56,7 @@ X2$r = 1/X2$r
 
 # Simulations database creation
 df = metrics_computation(X1)
+
 df$p_1 = 1-df$p_1
 df$p_2 = 1-df$p_2
 df$W_1 = 1-df$W_1
@@ -81,7 +82,7 @@ p4 <- plot_metric_by_parameter(df, p_2, AIG_year_area1, bin_width, expression(p[
 
 ## RC_1
 bin_width <- 0.05
-p5 <- plot_metric_by_parameter(df, RC_1, AIG_year_area1, bin_width, expression(R[C]~" in area 1"))
+p5 <- plot_metric_by_parameter(df, RC_1, AIG_year_area1, bin_width, expression(R[C]~" in area 1"), T)
 
 ## RC_2
 bin_width <- 0.05
@@ -119,26 +120,35 @@ lineplots <- (
 
 lineplots <- (
   (p1 | p2 | p3 | p4) / (p5 | p6) / (p7 | p8 | p9 | p10)
-) + plot_layout(guides='collect')+ plot_annotation(
+) + plot_layout(guides='collect', axis_titles='collect_y')+ plot_annotation(
   title = 'C.', theme = theme(plot.title = element_text(face = "bold", size = 10)))
 
 # Histogram of AIG per year distribution
 
 first_centile <- quantile(df$AIG_year_area1, 0.01)
 last_centile <- quantile(df$AIG_year_area1, 0.99)
+quantile75 <- quantile(df$AIG_year_area1, 0.75)
+quantile90 <- quantile(df$AIG_year_area1, 0.90)
 
 df_filtered <- df[df$AIG_year_area1 >= first_centile & df$AIG_year_area1 <= last_centile,]
 
 hist <- ggplot(df_filtered, aes(x = AIG_year_area1)) +
   geom_histogram(binwidth = 5, boundary = 0, fill = "skyblue", color = "white") +
-  labs(x = "AIG per year (in number of cases)", y = "Frequency",
+  labs(x = "AIG per year in Area 1\n(cases per year per 1000 individuals)", 
+       y = "Frequency",
        title = "A.") +
   theme(axis.title.y = element_blank(),
         plot.title = element_text(face = "bold", size = 10),
         axis.title.x = element_text(size = 10),
         axis.text.x = element_text(size = 7.5),
         axis.text.y = element_text(size = 7.5)) +
-  scale_x_continuous(breaks = seq(0, 200, by = 10)) 
+  scale_x_continuous(breaks = seq(0, 200, by = 10)) +
+  geom_vline(aes(xintercept = quantile75))+
+  annotate("text",x=quantile75+11, y=2000,label="q75")+
+  geom_vline(aes(xintercept = quantile90))+
+  annotate("text",x=quantile90+11, y=2000,label="q90")+
+  theme_bw()
+  
 
 # Histogram low & high
 
@@ -208,7 +218,7 @@ hist_rinv / (hist_W1 + hist_W2) / (hist_RC_1 + hist_RC_2) + plot_layout(guides =
 
 myvars <- c("rinv", "time_intervention", "R0_1", "R0_2", "W_1", "W_2", "p_1", "p_2")
 
-soboljansen_AIG = soboljansen(model = AIG1_computation, X1[myvars], X2[myvars], nboot = 100)
+#soboljansen_AIG = soboljansen(model = AIG1_computation, X1[myvars], X2[myvars], nboot = 100)
 
 df_sobol_first_order = soboljansen_AIG$S
 df_sobol_first_order$index = "first order"
@@ -231,12 +241,13 @@ pl_first_total <- sobol_AIG %>%
                               "R0_1"="R0 in area 1", "R0_2"="R0 in area 2",
                               "W_1"="Intervention efficiency in area 1", "W_2"="Intervention efficiency in area 2",
                               "p_1"=expression(p["1,2"]), "p_2"=expression(p["2,1"])))+
-  theme(legend.position = "bottom", legend.box="vertical", legend.text = element_text(size = 10), legend.title = element_text(size = 10))+
+  theme_bw()+
+  theme(legend.position = "bottom", legend.box="vertical", legend.text = element_text(size = 10), legend.title =  element_blank())+
   theme(strip.background =element_rect(fill="white", color="white"))+
-  theme(strip.placement = "outside", legend.position = "bottom",
-        strip.text = element_text(size=6))+
-  theme(axis.text.y=element_text(size=10))
-
+  theme(legend.position=c(0.83,1),#c(0.83,1),
+        legend.background=element_rect(colour = 1),
+        legend.box = "horizontal")
+pl_first_total
 ###################################
 ## Patchwork of article's charts  #
 ###################################
@@ -247,9 +258,13 @@ AABBBB
 "
 pl_first_total
 
-(hist + pl_first_total) / free(wrap_elements(lineplots), side = "l") + plot_layout(heights = c(0.4, 1))
+Figure3=(hist + pl_first_total) / free(wrap_elements(lineplots), side = "l") + plot_layout(heights = c(0.4, 1))
+Figure3
+ggsave(Figure3,filename ="Figure3.png" ,
+       width=9.5, height=9)
 
 lineplots
+
 
 #################
 # Decision Tree #
