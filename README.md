@@ -1,7 +1,7 @@
 # Assessing the impact of absence of coordination in malaria intervention strategies
 
 Code and analysis scripts for __Assessing the impact of absence of coordination in malaria intervention strategies: a modelling study__  
-Younes Iggidr, Nick Ruktanonchai, Bilal Benhana, Valérian Turbé, Billy Bauzile, Abigail Ward, Justin Cohen, Emilie Pothin, Clara Champagne.
+Younes Iggidr, Nick Ruktanonchai, Bilal Benhana, Valérian Turbé, Samuel Romano, Billy Bauzile, Abigail Ward, Justin Cohen, Emilie Pothin, Clara Champagne.
 
 The core model is a two-patch SIS metapopulation with Lagrangian mobility,
 derived from Ruktanonchai et al. (2016). Interventions multiply the transmission
